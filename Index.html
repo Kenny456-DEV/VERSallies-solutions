@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Versallies Solutions</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:#020202;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* FUNDO LOGOTIPO (fora da home) */
+.bg{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-image:url("./Screenshot_20260508_210005_com.whatsapp.jpg");
+    background-repeat:repeat;
+    background-size:140px;
+    opacity:0.08;
+    z-index:0;
+}
+
+/* ESCURECER LEVE */
+.overlay{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.15);
+    z-index:1;
+}
+
+/* HEADER */
+.header{
+    position:relative;
+    z-index:10;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 30px;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.header h1{
+    margin:0;
+    font-size:22px;
+    letter-spacing:2px;
+}
+
+.menu{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.menu button{
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    color:white;
+    background:linear-gradient(90deg,#8a2be2,#00bfff);
+}
+
+/* CONTEÚDO */
+.container{
+    position:relative;
+    z-index:5;
+    padding:40px 20px;
+    text-align:center;
+}
+
+/* CARDS */
+.card{
+    background:rgba(0,0,0,0.55);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:15px;
+    padding:20px;
+    margin:20px auto;
+    max-width:500px;
+    backdrop-filter:blur(12px);
+}
+
+/* BOTÕES */
+.service-buttons{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.service-buttons button,
+.btn-checkout{
+    padding:10px 18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    color:white;
+}
+
+.add{ background:#00bfff; }
+.order{ background:#8a2be2; }
+.exit{ background:#ff2c55; }
+
+/* INPUTS */
+input, textarea{
+    width:90%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin-top:10px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+/* SLIDER HOME */
+.slider{
+    margin-top:40px;
+    font-size:22px;
+    font-weight:bold;
+    min-height:80px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="bg" id="bg"></div>
+<div class="overlay"></div>
+
+<div class="header">
+
+<h1>VERSALLIES SOLUTIONS</h1>
+
+<div class="menu">
+<button onclick="show('home')">Home</button>
+<button onclick="show('services')">Serviços</button>
+<button onclick="show('cart')">Carrinho (<span id="count">0</span>)</button>
+<button onclick="show('booking')">Marcação</button>
+</div>
+
+</div>
+
+<div class="container">
+
+<h2 id="title"></h2>
+<div id="content"></div>
+<div class="slider" id="slider"></div>
+
+</div>
+
+<script>
+
+let page="home";
+let cart=[];
+
+const bg=document.getElementById("bg");
+
+const servicesList=[
+{id:1,title:"Criação de Apps",price:150000},
+{id:2,title:"Desenvolvimento Web",price:120000},
+{id:3,title:"Automação",price:200000}
+];
+
+const homeData=[
+{img:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1600&q=80",txt:"Trabalho feito com sucesso e rapidez"},
+{img:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80",txt:"Soluções tecnológicas modernas"},
+{img:"https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80",txt:"Inovação que transforma resultados"}
+];
+
+let i=0;
+let loop;
+
+/* HOME */
+function updateHome(){
+
+if(page!=="home")return;
+
+bg.style.backgroundImage=`url('${homeData[i].img}')`;
+bg.style.backgroundSize="cover";
+bg.style.backgroundPosition="center";
+bg.style.opacity="0.20";
+
+document.getElementById("slider").innerHTML=
+`<div style="background:rgba(0,0,0,0.55);padding:15px 25px;border-radius:12px;display:inline-block;">
+${homeData[i].txt}
+</div>`;
+
+i=(i+1)%homeData.length;
+
+}
+
+/* ADD */
+function addToCart(id){
+let item=servicesList.find(s=>s.id===id);
+cart.push(item);
+document.getElementById("count").innerText=cart.length;
+}
+
+/* FINALIZAR */
+function finishCart(){
+alert("Pedido enviado com sucesso!");
+cart=[];
+document.getElementById("count").innerText=0;
+show("cart");
+}
+
+/* SHOW */
+function show(p){
+
+page=p;
+
+let title=document.getElementById("title");
+let content=document.getElementById("content");
+let slider=document.getElementById("slider");
+
+title.innerText=p.toUpperCase();
+
+if(p==="home"){
+
+bg.style.backgroundRepeat="no-repeat";
+
+slider.style.display="block";
+content.innerHTML="<p>Bem-vindo à Versallies Solutions</p>";
+
+clearInterval(loop);
+i=0;
+updateHome();
+loop=setInterval(updateHome,4000);
+
+}else{
+
+bg.style.backgroundRepeat="repeat";
+bg.style.backgroundImage="url('./Screenshot_20260508_210005_com.whatsapp.jpg')";
+bg.style.backgroundSize="140px";
+bg.style.opacity="0.08";
+
+slider.style.display="none";
+
+if(p==="services"){
+
+let html="";
+
+servicesList.forEach(s=>{
+html+=`
+<div class="card">
+<h3>${s.title}</h3>
+<p>${s.price.toLocaleString()} Kz</p>
+
+<div class="service-buttons">
+<button class="add" onclick="addToCart(${s.id})">Adicionar</button>
+<button class="order">Pedido</button>
+<button class="exit" onclick="show('home')">Sair</button>
+</div>
+
+</div>`;
+});
+
+content.innerHTML=html;
+
+}
+
+if(p==="cart"){
+
+if(cart.length===0){
+content.innerHTML="<h3>Carrinho vazio</h3>";
+}else{
+
+let total=0;
+let html="";
+
+cart.forEach(x=>{
+total+=x.price;
+html+=`<div class="card">${x.title} - ${x.price} Kz</div>`;
+});
+
+html+=`
+<h3>Total: ${total} Kz</h3>
+<button class="btn-checkout order" onclick="finishCart()">Finalizar Pedido</button>
+`;
+
+content.innerHTML=html;
+
+}
+
+}
+
+if(p==="booking"){
+
+content.innerHTML=`
+<div class="card">
+<h3>Marcação</h3>
+<input type="date">
+<textarea placeholder="Descrição"></textarea>
+<button class="btn-checkout order">Confirmar</button>
+</div>`;
+}
+
+}
+
+}
+
+show("home");
+
+</script>
+
+</body>
+</html>
